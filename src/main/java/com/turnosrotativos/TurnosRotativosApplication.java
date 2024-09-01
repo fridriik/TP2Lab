@@ -9,5 +9,4 @@ public class TurnosRotativosApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TurnosRotativosApplication.class, args);
 	}
-
 }
