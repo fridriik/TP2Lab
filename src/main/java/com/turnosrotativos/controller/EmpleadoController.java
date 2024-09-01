@@ -1,7 +1,6 @@
 package com.turnosrotativos.controller;
 
 import com.turnosrotativos.dto.EmpleadoDTO;
-import com.turnosrotativos.exception.NotFoundException;
 import com.turnosrotativos.service.EmpleadoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +35,25 @@ public class EmpleadoController {
 
     @GetMapping
     public ResponseEntity<List<EmpleadoDTO>> obtenerTodosEmpleados() {
+        logger.info("Recibida solicitud para obtener todos los empleados");
         List<EmpleadoDTO> empleados = empleadoService.obtenerTodosLosEmpleados();
+        logger.info("Empleados obtenidos: {}", empleados);
         return ResponseEntity.ok(empleados);
     }
 
     @GetMapping("/{empleadoId}")
     public ResponseEntity<EmpleadoDTO> obtenerEmpleado(@PathVariable Integer empleadoId) {
+        logger.info("Recibida solicitud para obtener un empleado con el Id: {}", empleadoId);
         EmpleadoDTO empleado = empleadoService.obtenerEmpleadoPorId(empleadoId);
+        logger.info("Empleado obtenido: {}", empleado);
         return new ResponseEntity<>(empleado, HttpStatus.OK);
+    }
+
+    @PutMapping("/{empleadoId}")
+    public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable("empleadoId") Integer empleadoId, @RequestBody EmpleadoDTO empleadoDTO) {
+        logger.info("Recibida solicitud para actualizar al empleado: {}", empleadoDTO);
+        EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(Long.valueOf(empleadoId), empleadoDTO);
+        logger.info("Empleado actualizado: {}", empleadoActualizado);
+        return ResponseEntity.ok(empleadoActualizado);
     }
 }

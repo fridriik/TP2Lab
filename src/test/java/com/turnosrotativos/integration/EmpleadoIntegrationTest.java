@@ -16,6 +16,7 @@ import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -109,4 +110,27 @@ public class EmpleadoIntegrationTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("No se encontró el empleado con Id: 999"));
     }
+
+    @Test
+    public void whenActualizarEmpleadoExistenteThenReturnEmpleadoActualizado() throws Exception {
+        Empleado empleadoExistente = empleadoRepository.save(empleadoDTO1.toEntity());
+
+        EmpleadoDTO empleadoActualizado = new EmpleadoDTO();
+        empleadoActualizado.setNombre("Juan");
+        empleadoActualizado.setApellido("Pérez");
+        empleadoActualizado.setEmail("juan.perez@gmail.com");
+        empleadoActualizado.setNroDocumento(12345678);
+        empleadoActualizado.setFechaNacimiento(LocalDate.now().minusYears(25));
+        empleadoActualizado.setFechaIngreso(LocalDate.now().minusDays(5));
+
+        mockMvc.perform(put("/empleado/" + empleadoExistente.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(empleadoActualizado)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("Juan"))
+                .andExpect(jsonPath("$.apellido").value("Pérez"))
+                .andExpect(jsonPath("$.email").value("juan.perez@gmail.com"))
+                .andExpect(jsonPath("$.nroDocumento").value(12345678));
+    }
+
 }

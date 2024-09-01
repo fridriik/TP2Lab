@@ -30,7 +30,7 @@ public class EmpleadoService {
     @Transactional
     public EmpleadoDTO crearEmpleado(EmpleadoDTO empleadoDTO) {
         logger.info("Iniciando creación de empleado: {}", empleadoDTO);
-        validarEmpleado(empleadoDTO);
+        validarEmpleado(empleadoDTO, null);
         Empleado empleado = empleadoDTO.toEntity();
         Empleado empleadoCreado = empleadoRepository.save(empleado);
         logger.info("Empleado creado exitosamente: {}", empleadoCreado);
@@ -39,6 +39,7 @@ public class EmpleadoService {
 
     public List<EmpleadoDTO> obtenerTodosLosEmpleados() {
         List<Empleado> empleados = empleadoRepository.findAll();
+        logger.info("Obteniendo empleados: {}", empleados);
         return empleados.stream()
                 .map(EmpleadoDTO::fromEntity)
                 .collect(Collectors.toList());
@@ -47,14 +48,34 @@ public class EmpleadoService {
     public EmpleadoDTO obtenerEmpleadoPorId(Integer id) {
         Empleado empleado = empleadoRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + id));
+        logger.info("Obteniendo empleado: {}", empleado);
         return EmpleadoDTO.fromEntity(empleado);
     }
 
-    private void validarEmpleado(EmpleadoDTO empleadoDTO) {
+    public EmpleadoDTO actualizarEmpleado(Long empleadoId, EmpleadoDTO empleadoDTO) {
+        logger.info("Iniciando actualización de empleado: {}", empleadoDTO);
+        Empleado empleadoExistente = empleadoRepository.findById(empleadoId)
+                .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + empleadoId));
+
+        validarEmpleado(empleadoDTO, empleadoExistente.getId());
+
+        empleadoExistente.setNombre(empleadoDTO.getNombre());
+        empleadoExistente.setApellido(empleadoDTO.getApellido());
+        empleadoExistente.setEmail(empleadoDTO.getEmail());
+        empleadoExistente.setNroDocumento(empleadoDTO.getNroDocumento());
+        empleadoExistente.setFechaNacimiento(empleadoDTO.getFechaNacimiento());
+        empleadoExistente.setFechaIngreso(empleadoDTO.getFechaIngreso());
+
+        empleadoRepository.save(empleadoExistente);
+        logger.info("Actualización de empleado exitosa: {}", empleadoExistente);
+        return EmpleadoDTO.fromEntity(empleadoExistente);
+    }
+
+    private void validarEmpleado(EmpleadoDTO empleadoDTO, Integer empleadoDTOId) {
         logger.debug("Validando empleado: {}", empleadoDTO);
-        validarDocumentoUnico(empleadoDTO.getNroDocumento());
+        validarDocumentoUnico(empleadoDTO, empleadoDTOId);
         validarEdad(empleadoDTO.getFechaNacimiento());
-        validarEmailUnico(empleadoDTO.getEmail());
+        validarEmailUnico(empleadoDTO, empleadoDTOId);
         validarFechaIngreso(empleadoDTO.getFechaIngreso());
     }
 
@@ -65,17 +86,31 @@ public class EmpleadoService {
         }
     }
 
-    private void validarDocumentoUnico(Integer nroDocumento) {
-        if (nroDocumento != null && empleadoRepository.existsByNroDocumento(nroDocumento)) {
-            logger.warn("Intento de crear empleado con documento duplicado: {}", nroDocumento);
-            throw new ConflictException("Ya existe un empleado con el documento ingresado.");
+    private void validarDocumentoUnico(EmpleadoDTO empleadoDTO, Integer empleadoDTOId) {
+        boolean documentoExiste = empleadoRepository.existsByNroDocumento(empleadoDTO.getNroDocumento());
+        if (documentoExiste) {
+            if (empleadoDTOId == null ||
+                    !empleadoRepository.findById(Long.valueOf(empleadoDTOId))
+                            .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + empleadoDTOId))
+                            .getNroDocumento()
+                            .equals(empleadoDTO.getNroDocumento())) {
+                logger.warn("Intento de crear un empleado con el documento existente: {}", empleadoDTO.getNroDocumento());
+                throw new ConflictException("Ya existe un empleado con el documento ingresado.");
+            }
         }
     }
 
-    private void validarEmailUnico(String email) {
-        if (email != null && empleadoRepository.existsByEmail(email)) {
-            logger.warn("Intento de crear empleado con email duplicado: {}", email);
-            throw new ConflictException("Ya existe un empleado con el email ingresado.");
+    private void validarEmailUnico(EmpleadoDTO empleadoDTO, Integer empleadoDTOId) {
+        boolean emailExiste = empleadoRepository.existsByEmail(empleadoDTO.getEmail());
+        if (emailExiste) {
+            if (empleadoDTOId == null ||
+                    !empleadoRepository.findById(Long.valueOf(empleadoDTOId))
+                            .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + empleadoDTOId))
+                            .getEmail()
+                            .equals(empleadoDTO.getEmail())) {
+                logger.warn("Intento de crear un empleado con el email existente: {}", empleadoDTO.getEmail());
+                throw new ConflictException("Ya existe un empleado con el email ingresado.");
+            }
         }
     }
 

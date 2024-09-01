@@ -11,8 +11,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,12 +59,14 @@ class EmpleadoServiceTest {
         EmpleadoDTO result = empleadoService.crearEmpleado(empleadoDTO1);
 
         assertNotNull(result);
+        assertEquals(empleadoDTO1.getId(), result.getId());
         assertEquals(empleadoDTO1.getNombre(), result.getNombre());
         assertEquals(empleadoDTO1.getApellido(), result.getApellido());
         assertEquals(empleadoDTO1.getEmail(), result.getEmail());
         assertEquals(empleadoDTO1.getNroDocumento(), result.getNroDocumento());
         assertEquals(empleadoDTO1.getFechaIngreso(), result.getFechaIngreso());
         assertEquals(empleadoDTO1.getFechaNacimiento(), result.getFechaNacimiento());
+        assertEquals(empleadoDTO1.getFechaCreacion(), result.getFechaCreacion());
 
         verify(empleadoRepository).save(any(Empleado.class));
     }
@@ -125,4 +129,52 @@ class EmpleadoServiceTest {
         verify(empleadoRepository, times(1)).findAll();
     }
 
+    @Test
+    void obtenerEmpleadoPorId() {
+        Integer empleadoId = 1;
+        Empleado empleadoSimulado = empleadoDTO1.toEntity();
+        empleadoSimulado.setId(empleadoId);
+
+        when(empleadoRepository.findById(Long.valueOf(empleadoId))).thenReturn(Optional.of(empleadoSimulado));
+
+        EmpleadoDTO empleadoObtenido = empleadoService.obtenerEmpleadoPorId(empleadoId);
+
+        assertNotNull(empleadoObtenido);
+        assertEquals(empleadoSimulado.getId(), empleadoObtenido.getId());
+        assertEquals(empleadoDTO1.getNombre(), empleadoObtenido.getNombre());
+        assertEquals(empleadoDTO1.getApellido(), empleadoObtenido.getApellido());
+        assertEquals(empleadoDTO1.getEmail(), empleadoObtenido.getEmail());
+        assertEquals(empleadoDTO1.getNroDocumento(), empleadoObtenido.getNroDocumento());
+        assertEquals(empleadoDTO1.getFechaIngreso(), empleadoObtenido.getFechaIngreso());
+        assertEquals(empleadoDTO1.getFechaNacimiento(), empleadoObtenido.getFechaNacimiento());
+        assertEquals(empleadoDTO1.getFechaCreacion(), empleadoObtenido.getFechaCreacion());
+
+        verify(empleadoRepository).findById(Long.valueOf(empleadoId));
+    }
+
+    @Test
+    public void actualizarEmpleadoExistente() {
+        Integer empleadoId = 1;
+        empleadoDTO1.setFechaCreacion(LocalDateTime.now());
+        Empleado empleadoExistente = empleadoDTO1.toEntity();
+        empleadoExistente.setId(empleadoId);
+
+        when(empleadoRepository.findById(Long.valueOf(empleadoId))).thenReturn(Optional.of(empleadoExistente));
+        when(empleadoRepository.save(any(Empleado.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(Long.valueOf(empleadoId), empleadoDTO2);
+
+        assertNotNull(empleadoActualizado);
+        assertEquals(empleadoExistente.getId(), empleadoActualizado.getId());
+        assertEquals(empleadoDTO2.getNombre(), empleadoActualizado.getNombre());
+        assertEquals(empleadoDTO2.getApellido(), empleadoActualizado.getApellido());
+        assertEquals(empleadoDTO2.getEmail(), empleadoActualizado.getEmail());
+        assertEquals(empleadoDTO2.getNroDocumento(), empleadoActualizado.getNroDocumento());
+        assertEquals(empleadoDTO2.getFechaIngreso(), empleadoActualizado.getFechaIngreso());
+        assertEquals(empleadoDTO2.getFechaNacimiento(), empleadoActualizado.getFechaNacimiento());
+        assertEquals(empleadoExistente.getFechaCreacion(), empleadoActualizado.getFechaCreacion());
+
+        verify(empleadoRepository).findById(Long.valueOf(empleadoExistente.getId()));
+        verify(empleadoRepository).save(any(Empleado.class));
+    }
 }
