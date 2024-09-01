@@ -14,12 +14,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -84,5 +85,28 @@ public class EmpleadoIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    public void whenObtenerEmpleadoValidoThenReturnEmpleado() throws Exception {
+        Empleado empleado = empleadoRepository.save(empleadoDTO1.toEntity());
+
+        mockMvc.perform(get("/empleado/" + empleado.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("German"))
+                .andExpect(jsonPath("$.apellido").value("Zotella"))
+                .andExpect(jsonPath("$.email").value("gzotella@gmail.com"))
+                .andExpect(jsonPath("$.nroDocumento").value(30415654))
+                .andExpect(jsonPath("$.fechaIngreso").value(LocalDate.now().toString()))
+                .andExpect(jsonPath("$.fechaNacimiento").value(LocalDate.now().minusYears(18).toString()));
+    }
+
+    @Test
+    public void whenObtenerEmpleadoInvalidoThenReturnNotFound() throws Exception {
+        mockMvc.perform(get("/empleado/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("No se encontró el empleado con Id: 999"));
     }
 }

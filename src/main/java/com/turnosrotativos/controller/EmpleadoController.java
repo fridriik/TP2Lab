@@ -1,6 +1,7 @@
 package com.turnosrotativos.controller;
 
 import com.turnosrotativos.dto.EmpleadoDTO;
+import com.turnosrotativos.exception.NotFoundException;
 import com.turnosrotativos.service.EmpleadoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +38,11 @@ public class EmpleadoController {
     public ResponseEntity<List<EmpleadoDTO>> obtenerTodosEmpleados() {
         List<EmpleadoDTO> empleados = empleadoService.obtenerTodosLosEmpleados();
         return ResponseEntity.ok(empleados);
+    }
+
+    @GetMapping("/{empleadoId}")
+    public ResponseEntity<EmpleadoDTO> obtenerEmpleado(@PathVariable Integer empleadoId) {
+        EmpleadoDTO empleado = empleadoService.obtenerEmpleadoPorId(empleadoId);
+        return new ResponseEntity<>(empleado, HttpStatus.OK);
     }
 }

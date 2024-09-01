@@ -1,6 +1,7 @@
 package com.turnosrotativos.service;
 
 import com.turnosrotativos.dto.EmpleadoDTO;
+import com.turnosrotativos.exception.NotFoundException;
 import com.turnosrotativos.model.Empleado;
 import com.turnosrotativos.repository.EmpleadoRepository;
 import com.turnosrotativos.exception.BadRequestException;
@@ -41,6 +42,12 @@ public class EmpleadoService {
         return empleados.stream()
                 .map(EmpleadoDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public EmpleadoDTO obtenerEmpleadoPorId(Integer id) {
+        Empleado empleado = empleadoRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + id));
+        return EmpleadoDTO.fromEntity(empleado);
     }
 
     private void validarEmpleado(EmpleadoDTO empleadoDTO) {
