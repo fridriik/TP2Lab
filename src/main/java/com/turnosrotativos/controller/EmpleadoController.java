@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/empleado")
 public class EmpleadoController {
@@ -29,5 +31,11 @@ public class EmpleadoController {
         EmpleadoDTO empleadoCreado = empleadoService.crearEmpleado(empleadoDTO);
         logger.info("Empleado creado exitosamente: {}", empleadoCreado);
         return new ResponseEntity<>(empleadoCreado, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EmpleadoDTO>> obtenerTodosEmpleados() {
+        List<EmpleadoDTO> empleados = empleadoService.obtenerTodosLosEmpleados();
+        return ResponseEntity.ok(empleados);
     }
 }

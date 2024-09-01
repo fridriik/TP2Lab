@@ -32,6 +32,8 @@ public class EmpleadoDTO {
     @NotNull(message = "La fecha de ingreso es obligatoria.")
     private LocalDate fechaIngreso;
 
+    private LocalDateTime fechaCreacion;
+
     public EmpleadoDTO(Integer id, String nombre, String apellido,
                        String email, Integer nroDocumento,
                        LocalDate fechaNacimiento, LocalDate fechaIngreso) {
@@ -102,6 +104,14 @@ public class EmpleadoDTO {
         this.fechaIngreso = fechaIngreso;
     }
 
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
     public Empleado toEntity() {
         Empleado empleado = new Empleado();
         empleado.setId(this.id);
@@ -115,7 +125,7 @@ public class EmpleadoDTO {
     }
 
     public static EmpleadoDTO fromEntity(Empleado empleado) {
-        return new EmpleadoDTO(
+        EmpleadoDTO dto = new EmpleadoDTO(
                 empleado.getId(),
                 empleado.getNombre(),
                 empleado.getApellido(),
@@ -124,5 +134,7 @@ public class EmpleadoDTO {
                 empleado.getFechaNacimiento(),
                 empleado.getFechaIngreso()
         );
+        dto.setFechaCreacion(empleado.getFechaCreacion());
+        return dto;
     }
 }

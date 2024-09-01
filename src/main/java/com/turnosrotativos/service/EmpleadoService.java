@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmpleadoService {
@@ -32,6 +34,13 @@ public class EmpleadoService {
         Empleado empleadoCreado = empleadoRepository.save(empleado);
         logger.info("Empleado creado exitosamente: {}", empleadoCreado);
         return EmpleadoDTO.fromEntity(empleadoCreado);
+    }
+
+    public List<EmpleadoDTO> obtenerTodosLosEmpleados() {
+        List<Empleado> empleados = empleadoRepository.findAll();
+        return empleados.stream()
+                .map(EmpleadoDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     private void validarEmpleado(EmpleadoDTO empleadoDTO) {
