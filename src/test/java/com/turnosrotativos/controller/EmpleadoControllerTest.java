@@ -1,4 +1,4 @@
-package com.turnosrotativos.integration;
+package com.turnosrotativos.controller;
 
 import com.turnosrotativos.dto.EmpleadoDTO;
 import com.turnosrotativos.model.Empleado;
@@ -21,12 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class EmpleadoIntegrationTest {
+public class EmpleadoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
