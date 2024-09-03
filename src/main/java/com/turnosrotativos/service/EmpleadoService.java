@@ -52,9 +52,9 @@ public class EmpleadoService {
         return EmpleadoDTO.fromEntity(empleado);
     }
 
-    public EmpleadoDTO actualizarEmpleado(Long empleadoId, EmpleadoDTO empleadoDTO) {
+    public EmpleadoDTO actualizarEmpleado(Integer empleadoId, EmpleadoDTO empleadoDTO) {
         logger.info("Iniciando actualización de empleado: {}", empleadoDTO);
-        Empleado empleadoExistente = empleadoRepository.findById(empleadoId)
+        Empleado empleadoExistente = empleadoRepository.findById(Long.valueOf(empleadoId))
                 .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + empleadoId));
 
         validarEmpleado(empleadoDTO, empleadoExistente.getId());

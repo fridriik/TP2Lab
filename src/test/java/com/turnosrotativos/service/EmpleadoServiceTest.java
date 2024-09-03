@@ -162,7 +162,7 @@ class EmpleadoServiceTest {
         when(empleadoRepository.findById(Long.valueOf(empleadoId))).thenReturn(Optional.of(empleadoExistente));
         when(empleadoRepository.save(any(Empleado.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(Long.valueOf(empleadoId), empleadoDTO2);
+        EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(empleadoId, empleadoDTO2);
 
         assertNotNull(empleadoActualizado);
         assertEquals(empleadoExistente.getId(), empleadoActualizado.getId());

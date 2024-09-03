@@ -52,7 +52,7 @@ public class EmpleadoController {
     @PutMapping("/{empleadoId}")
     public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable("empleadoId") Integer empleadoId, @RequestBody EmpleadoDTO empleadoDTO) {
         logger.info("Recibida solicitud para actualizar al empleado: {}", empleadoDTO);
-        EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(Long.valueOf(empleadoId), empleadoDTO);
+        EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(empleadoId, empleadoDTO);
         logger.info("Empleado actualizado: {}", empleadoActualizado);
         return ResponseEntity.ok(empleadoActualizado);
     }
