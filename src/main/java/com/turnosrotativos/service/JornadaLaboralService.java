@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JornadaLaboralService {
@@ -57,6 +58,41 @@ public class JornadaLaboralService {
         return JornadaResponseDTO.fromEntity(jornadaLaboral);
     }
 
+    public List<JornadaResponseDTO> obtenerJornadas(LocalDate fechaDesde, LocalDate fechaHasta, Integer nroDocumento) {
+        if (fechaDesde != null && fechaHasta != null && fechaDesde.isAfter(fechaHasta)) {
+            throw new BadRequestException("El campo ‘fechaDesde’ no puede ser mayor que ‘fechaHasta’.");
+        }
+
+        List<JornadaLaboral> jornadas;
+        if (nroDocumento != null) {
+            if (!empleadoRepository.existsByNroDocumento(nroDocumento)) {
+                throw new NotFoundException("No existe un empleado con el número de documento ingresado.");
+            }
+            if (fechaDesde != null && fechaHasta != null) {
+                jornadas = jornadaLaboralRepository.findByEmpleadoNroDocumentoAndFechaBetween(nroDocumento, fechaDesde, fechaHasta);
+            } else if (fechaDesde != null) {
+                jornadas = jornadaLaboralRepository.findByEmpleadoNroDocumentoAndFechaGreaterThanEqual(nroDocumento, fechaDesde);
+            } else if (fechaHasta != null) {
+                jornadas = jornadaLaboralRepository.findByEmpleadoNroDocumentoAndFechaLessThanEqual(nroDocumento, fechaHasta);
+            } else {
+                jornadas = jornadaLaboralRepository.findByEmpleadoNroDocumento(nroDocumento);
+            }
+        } else if (fechaDesde != null || fechaHasta != null) {
+            if (fechaDesde != null && fechaHasta != null) {
+                jornadas = jornadaLaboralRepository.findByFechaBetween(fechaDesde, fechaHasta);
+            } else if (fechaDesde != null) {
+                jornadas = jornadaLaboralRepository.findByFechaGreaterThanEqual(fechaDesde);
+            } else {
+                jornadas = jornadaLaboralRepository.findByFechaLessThanEqual(fechaHasta);
+            }
+        } else {
+            jornadas = jornadaLaboralRepository.findAll();
+        }
+
+        return jornadas.stream()
+                .map(JornadaResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
 
     private void validarHorasTrabajadas(ConceptoLaboral concepto, Integer horasTrabajadas) {
         //ID 3 corresponde a "Día Libre"
