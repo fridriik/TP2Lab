@@ -32,36 +32,42 @@ public class EmpleadoService {
 
     @Transactional
     public EmpleadoDTO crearEmpleado(EmpleadoDTO empleadoDTO) {
-        logger.info("Iniciando creación de empleado: {}", empleadoDTO);
+        logger.info("Iniciando creación de empleado");
         validarEmpleado(empleadoDTO, null);
         Empleado empleado = empleadoDTO.toEntity();
         Empleado empleadoCreado = empleadoRepository.save(empleado);
-        logger.info("Empleado creado exitosamente: {}", empleadoCreado);
+        logger.info("Empleado creado exitosamente con ID: {}", empleadoCreado.getId());
         return EmpleadoDTO.fromEntity(empleadoCreado);
     }
 
     public List<EmpleadoDTO> obtenerTodosLosEmpleados() {
         List<Empleado> empleados = empleadoRepository.findAll();
-        logger.info("Obteniendo empleados: {}", empleados);
+        logger.info("Obteniendo todos los empleados");
         return empleados.stream()
                 .map(EmpleadoDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
     public EmpleadoDTO obtenerEmpleadoPorId(Integer id) {
+        logger.info("Buscando empleado con ID: {}", id);
         Empleado empleado = empleadoRepository.findById(Long.valueOf(id))
-                .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + id));
+                .orElseThrow(() -> {
+                    logger.warn("No se encontró el empleado con ID: {}", id);
+                    return new NotFoundException("No se encontró el empleado con Id: " + id);
+                });
         logger.info("Obteniendo empleado: {}", empleado);
         return EmpleadoDTO.fromEntity(empleado);
     }
 
     public EmpleadoDTO actualizarEmpleado(Integer empleadoId, EmpleadoDTO empleadoDTO) {
-        logger.info("Iniciando actualización de empleado: {}", empleadoDTO);
+        logger.info("Iniciando actualización de empleado con ID: {}", empleadoId);
         Empleado empleadoExistente = empleadoRepository.findById(Long.valueOf(empleadoId))
-                .orElseThrow(() -> new NotFoundException("No se encontró el empleado con Id: " + empleadoId));
+                .orElseThrow(() -> {
+                    logger.warn("Intento de actualizar empleado inexistente con ID: {}", empleadoId);
+                    return new NotFoundException("No se encontró el empleado con Id: " + empleadoId);
+                });
 
         validarEmpleado(empleadoDTO, empleadoExistente.getId());
-
         empleadoExistente.setNombre(empleadoDTO.getNombre());
         empleadoExistente.setApellido(empleadoDTO.getApellido());
         empleadoExistente.setEmail(empleadoDTO.getEmail());
@@ -70,19 +76,23 @@ public class EmpleadoService {
         empleadoExistente.setFechaIngreso(empleadoDTO.getFechaIngreso());
 
         empleadoRepository.save(empleadoExistente);
-        logger.info("Actualización de empleado exitosa: {}", empleadoExistente);
+        logger.info("Empleado actualizado exitosamente con ID: {}", empleadoId);
         return EmpleadoDTO.fromEntity(empleadoExistente);
     }
 
     @Transactional
     public void eliminarEmpleado(Integer empleadoId) {
+        logger.info("Iniciando eliminación de empleado con Id: {}", empleadoId);
         if (existenJornadasAsociadas(empleadoId)) {
+            logger.warn("Intento de eliminar empleado con jornadas asociadas. Id: {}", empleadoId);
             throw new BadRequestException("No es posible eliminar un empleado con jornadas asociadas.");
         }
         if (!empleadoRepository.existsById(Long.valueOf(empleadoId))) {
+            logger.warn("Intento de eliminar empleado inexistente. Id: {}", empleadoId);
             throw new NotFoundException("No se encontró el empleado con Id: {" + empleadoId + "}");
         }
         empleadoRepository.deleteById(Long.valueOf(empleadoId));
+        logger.info("Empleado eliminado exitosamente. Id: {}", empleadoId);
     }
 
     private boolean existenJornadasAsociadas(Integer empleadoId) {
