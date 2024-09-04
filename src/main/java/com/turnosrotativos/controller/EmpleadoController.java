@@ -56,4 +56,10 @@ public class EmpleadoController {
         logger.info("Empleado actualizado: {}", empleadoActualizado);
         return ResponseEntity.ok(empleadoActualizado);
     }
+
+    @DeleteMapping("/{empleadoId}")
+    public ResponseEntity<Void> eliminarEmpleado(@PathVariable Integer empleadoId) {
+        empleadoService.eliminarEmpleado(empleadoId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

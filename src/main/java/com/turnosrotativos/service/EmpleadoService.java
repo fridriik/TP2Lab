@@ -6,6 +6,7 @@ import com.turnosrotativos.model.Empleado;
 import com.turnosrotativos.repository.EmpleadoRepository;
 import com.turnosrotativos.exception.BadRequestException;
 import com.turnosrotativos.exception.ConflictException;
+import com.turnosrotativos.repository.JornadaLaboralRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
@@ -19,12 +20,14 @@ import java.util.stream.Collectors;
 public class EmpleadoService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmpleadoService.class);
-
     private final EmpleadoRepository empleadoRepository;
+    private final JornadaLaboralRepository jornadaLaboralRepository;
 
     @Autowired
-    public EmpleadoService(EmpleadoRepository empleadoRepository) {
+    public EmpleadoService(EmpleadoRepository empleadoRepository,
+                           JornadaLaboralRepository jornadaLaboralRepository) {
         this.empleadoRepository = empleadoRepository;
+        this.jornadaLaboralRepository = jornadaLaboralRepository;
     }
 
     @Transactional
@@ -69,6 +72,21 @@ public class EmpleadoService {
         empleadoRepository.save(empleadoExistente);
         logger.info("Actualización de empleado exitosa: {}", empleadoExistente);
         return EmpleadoDTO.fromEntity(empleadoExistente);
+    }
+
+    @Transactional
+    public void eliminarEmpleado(Integer empleadoId) {
+        if (existenJornadasAsociadas(empleadoId)) {
+            throw new BadRequestException("No es posible eliminar un empleado con jornadas asociadas.");
+        }
+        if (!empleadoRepository.existsById(Long.valueOf(empleadoId))) {
+            throw new NotFoundException("No se encontró el empleado con Id: {" + empleadoId + "}");
+        }
+        empleadoRepository.deleteById(Long.valueOf(empleadoId));
+    }
+
+    private boolean existenJornadasAsociadas(Integer empleadoId) {
+        return jornadaLaboralRepository.countByEmpleadoId(empleadoId) > 0;
     }
 
     private void validarEmpleado(EmpleadoDTO empleadoDTO, Integer empleadoDTOId) {
