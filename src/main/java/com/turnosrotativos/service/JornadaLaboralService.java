@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,10 +61,7 @@ public class JornadaLaboralService {
     }
 
     public List<JornadaResponseDTO> obtenerJornadas(LocalDate fechaDesde, LocalDate fechaHasta, Integer nroDocumento) {
-        if (fechaDesde != null && fechaHasta != null && fechaDesde.isAfter(fechaHasta)) {
-            throw new BadRequestException("El campo ‘fechaDesde’ no puede ser mayor que ‘fechaHasta’.");
-        }
-
+        validarRangoFechas(fechaDesde, fechaHasta);
         List<JornadaLaboral> jornadas;
         if (nroDocumento != null) {
             if (!empleadoRepository.existsByNroDocumento(nroDocumento)) {
@@ -167,6 +166,12 @@ public class JornadaLaboralService {
         boolean existeJornada = jornadaLaboralRepository.existsByEmpleadoIdAndFechaAndConceptoLaboralId(empleadoId, fecha, conceptoId);
         if (existeJornada) {
             throw new BadRequestException("El empleado ya tiene registrado una jornada con este concepto en la fecha ingresada.");
+        }
+    }
+
+    public void validarRangoFechas(LocalDate fechaDesde, LocalDate fechaHasta) {
+        if (fechaDesde != null && fechaHasta != null && fechaDesde.isAfter(fechaHasta)) {
+            throw new BadRequestException("El campo ‘fechaDesde’ no puede ser mayor que ‘fechaHasta’.");
         }
     }
 

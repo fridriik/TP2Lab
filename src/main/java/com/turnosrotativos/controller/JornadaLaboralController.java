@@ -2,6 +2,7 @@ package com.turnosrotativos.controller;
 
 import com.turnosrotativos.dto.JornadaRequestDTO;
 import com.turnosrotativos.dto.JornadaResponseDTO;
+import com.turnosrotativos.exception.BadRequestException;
 import com.turnosrotativos.service.JornadaLaboralService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController

@@ -45,6 +45,7 @@ public class ConceptoLaboralService {
 
     public List<ConceptoLaboralDTO> obtenerConceptoLaboralPorNombre(String nombre) {
         List<ConceptoLaboral> conceptos = conceptoLaboralRepository.findByNombreContaining(nombre);
+        System.out.println("Resultados de la búsqueda: " + conceptos);
         return conceptos.stream()
                 .map(ConceptoLaboralDTO::fromEntity)
                 .collect(Collectors.toList());
