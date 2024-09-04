@@ -1,7 +1,9 @@
 package com.turnosrotativos.dto;
 
 import com.turnosrotativos.model.ConceptoLaboral;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConceptoLaboralDTO {
     private Integer id;
     private String nombre;
