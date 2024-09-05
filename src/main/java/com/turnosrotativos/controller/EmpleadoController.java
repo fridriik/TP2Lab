@@ -24,7 +24,7 @@ public class EmpleadoController {
     public ResponseEntity<EmpleadoDTO> crearEmpleado(@Valid @RequestBody EmpleadoDTO empleadoDTO) {
         logger.info("Solicitud recibida para crear empleado");
         EmpleadoDTO empleadoCreado = empleadoService.crearEmpleado(empleadoDTO);
-        logger.info("Empleado creado exitosamente con Id: {}", empleadoCreado.getId());
+        logger.info("Solicitud finalizada con éxito, empleado creado con Id: {}", empleadoCreado.getId());
         return new ResponseEntity<>(empleadoCreado, HttpStatus.CREATED);
     }
 
@@ -46,7 +46,7 @@ public class EmpleadoController {
     public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable("empleadoId") Integer empleadoId, @RequestBody EmpleadoDTO empleadoDTO) {
         logger.info("Solicitud recibida para actualizar al empleado con el Id: {}", empleadoId);
         EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(empleadoId, empleadoDTO);
-        logger.info("Empleado actualizado con Id: {}", empleadoId);
+        logger.info("Solicitud finalizada con éxito, empleado actualizado con Id: {}", empleadoId);
         return ResponseEntity.ok(empleadoActualizado);
     }
 

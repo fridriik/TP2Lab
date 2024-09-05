@@ -2,7 +2,6 @@ package com.turnosrotativos.controller;
 
 import com.turnosrotativos.dto.JornadaRequestDTO;
 import com.turnosrotativos.dto.JornadaResponseDTO;
-import com.turnosrotativos.exception.BadRequestException;
 import com.turnosrotativos.service.JornadaLaboralService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -13,11 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -33,7 +28,7 @@ public class JornadaLaboralController {
     public ResponseEntity<JornadaResponseDTO> crearJornada(@RequestBody JornadaRequestDTO requestDTO) {
         logger.info("Solicitud recibida para crear jornada laboral");
         JornadaResponseDTO responseDTO = jornadaLaboralService.crearJornada(requestDTO);
-        logger.info("Jornada laboral creada exitosamente con Id: {}", responseDTO.getId());
+        logger.info("Solicitud finalizada con éxito, jornada laboral creada con Id: {}", responseDTO.getId());
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 

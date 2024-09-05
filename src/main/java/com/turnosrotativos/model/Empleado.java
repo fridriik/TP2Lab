@@ -12,7 +12,7 @@ public class Empleado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "nro_documento", nullable = false)
+    @Column(name = "nro_documento", nullable = false, unique = true)
     private Integer  nroDocumento;
 
     @Column(name = "nombre", nullable = false)
@@ -21,7 +21,7 @@ public class Empleado {
     @Column(name = "apellido", nullable = false)
     private String apellido;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "fecha_nacimiento", nullable = false)

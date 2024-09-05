@@ -52,11 +52,11 @@ public class ConceptoLaboral {
         this.laborable = laborable;
     }
 
-    public @NotBlank String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(@NotBlank String nombre) {
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 }

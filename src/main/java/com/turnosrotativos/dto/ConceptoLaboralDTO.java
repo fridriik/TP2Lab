@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConceptoLaboralDTO {
+
     private Integer id;
     private String nombre;
     private Integer hsMinimo;
@@ -20,6 +21,30 @@ public class ConceptoLaboralDTO {
     }
 
     public ConceptoLaboralDTO(){}
+
+    public static ConceptoLaboralDTO fromEntity(ConceptoLaboral concepto) {
+        ConceptoLaboralDTO dto = new ConceptoLaboralDTO();
+        dto.setId(concepto.getId());
+        dto.setLaborable(concepto.getLaborable());
+        dto.setNombre(concepto.getNombre());
+        if (concepto.getHsMaximo() != null) {
+            dto.setHsMaximo(concepto.getHsMaximo());
+        }
+        if (concepto.getHsMinimo() != null) {
+            dto.setHsMinimo(concepto.getHsMinimo());
+        }
+        return dto;
+    }
+
+    public ConceptoLaboral toEntity() {
+        ConceptoLaboral conceptoLaboral = new ConceptoLaboral();
+        conceptoLaboral.setId(this.id);
+        conceptoLaboral.setNombre(this.nombre);
+        conceptoLaboral.setHsMinimo(this.hsMinimo);
+        conceptoLaboral.setHsMaximo(this.hsMaximo);
+        conceptoLaboral.setLaborable(this.laborable);
+        return conceptoLaboral;
+    }
 
     public Integer getId() {
         return id;
@@ -59,29 +84,5 @@ public class ConceptoLaboralDTO {
 
     public void setLaborable(Boolean laborable) {
         this.laborable = laborable;
-    }
-
-    public static ConceptoLaboralDTO fromEntity(ConceptoLaboral concepto) {
-        ConceptoLaboralDTO dto = new ConceptoLaboralDTO();
-        dto.setId(concepto.getId());
-        dto.setLaborable(concepto.getLaborable());
-        dto.setNombre(concepto.getNombre());
-        if (concepto.getHsMaximo() != null) {
-            dto.setHsMaximo(concepto.getHsMaximo());
-        }
-        if (concepto.getHsMinimo() != null) {
-            dto.setHsMinimo(concepto.getHsMinimo());
-        }
-        return dto;
-    }
-
-    public ConceptoLaboral toEntity() {
-        ConceptoLaboral conceptoLaboral = new ConceptoLaboral();
-        conceptoLaboral.setId(this.id);
-        conceptoLaboral.setNombre(this.nombre);
-        conceptoLaboral.setHsMinimo(this.hsMinimo);
-        conceptoLaboral.setHsMaximo(this.hsMaximo);
-        conceptoLaboral.setLaborable(this.laborable);
-        return conceptoLaboral;
     }
 }

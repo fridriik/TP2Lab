@@ -1,9 +1,11 @@
 package com.turnosrotativos.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.turnosrotativos.model.Empleado;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 
 public class EmpleadoDTO {
 
@@ -48,70 +50,6 @@ public class EmpleadoDTO {
 
     public EmpleadoDTO(){}
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public @NotBlank(message = "El nombre es obligatorio.") @Pattern(regexp = "^[a-zA-Z]+$", message = "Solo se permiten letras en el campo 'nombre'.") String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(@NotBlank(message = "El nombre es obligatorio.") @Pattern(regexp = "^[a-zA-Z]+$", message = "Solo se permiten letras en el campo 'nombre'.") String nombre) {
-        this.nombre = nombre;
-    }
-
-    public @NotBlank(message = "El apellido es obligatorio.") @Pattern(regexp = "^[a-zA-Z]+$", message = "Solo se permiten letras en el campo 'apellido'.") String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(@NotBlank(message = "El apellido es obligatorio.") @Pattern(regexp = "^[a-zA-Z]+$", message = "Solo se permiten letras en el campo 'apellido'.") String apellido) {
-        this.apellido = apellido;
-    }
-
-    public @NotBlank(message = "El email es obligatorio.") @Email(message = "El email ingresado no es correcto.") String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@NotBlank(message = "El email es obligatorio.") @Email(message = "El email ingresado no es correcto.") String email) {
-        this.email = email;
-    }
-
-    public @NotNull(message = "El número de documento es obligatorio.") @DecimalMin(value = "1000000", message = "El número de documento debe tener al menos 7 dígitos.") @DecimalMax(value = "99999999", message = "El número de documento no puede tener más de 8 dígitos.") Integer getNroDocumento() {
-        return nroDocumento;
-    }
-
-    public void setNroDocumento(@NotNull(message = "El número de documento es obligatorio.") @DecimalMin(value = "1000000", message = "El número de documento debe tener al menos 7 dígitos.") @DecimalMax(value = "99999999", message = "El número de documento no puede tener más de 8 dígitos.") Integer nroDocumento) {
-        this.nroDocumento = nroDocumento;
-    }
-
-    public @NotNull(message = "La fecha de nacimiento es obligatoria.") LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public void setFechaNacimiento(@NotNull(message = "La fecha de nacimiento es obligatoria.") LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public LocalDate getFechaIngreso() {
-        return fechaIngreso;
-    }
-
-    public void setFechaIngreso(@NotNull(message = "La fecha de ingreso es obligatoria.") @Past(message = "La fecha de ingreso no puede ser posterior al día de la fecha.") LocalDate fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
     public Empleado toEntity() {
         Empleado empleado = new Empleado();
         empleado.setId(this.id);
@@ -137,4 +75,52 @@ public class EmpleadoDTO {
         dto.setFechaCreacion(empleado.getFechaCreacion());
         return dto;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNombre() {return nombre;}
+
+    public void setNombre(String nombre) {this.nombre = nombre;}
+
+    public String getApellido() {return apellido;}
+
+    public void setApellido(String apellido) {this.apellido = apellido;}
+
+    public String getEmail() {return email;}
+
+    public void setEmail(String email) {this.email = email;}
+
+    public Integer getNroDocumento() {return nroDocumento;}
+
+    public void setNroDocumento(Integer nroDocumento) {this.nroDocumento = nroDocumento;}
+
+    public LocalDate getFechaNacimiento() {return fechaNacimiento;}
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {this.fechaNacimiento = fechaNacimiento;}
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(LocalDate fechaIngreso) {this.fechaIngreso = fechaIngreso;}
+
+    public LocalDateTime getFechaCreacion() {return fechaCreacion;}
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    @JsonIgnore
+    @AssertTrue(message = "La fecha de ingreso no puede ser posterior al día de la fecha.")
+    public boolean isFechaIngresoValida() {return !fechaIngreso.isAfter(LocalDate.now());}
+
+    @JsonIgnore
+    @AssertTrue(message = "La edad del empleado no puede ser menor a 18 años.")
+    public boolean isMayorDeEdad() {return Period.between(this.fechaNacimiento, LocalDate.now()).getYears() >= 18;}
 }

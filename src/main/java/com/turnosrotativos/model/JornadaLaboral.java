@@ -53,7 +53,7 @@ public class JornadaLaboral {
         return horasTrabajadas;
     }
 
-    public void sethorasTrabajadas(Integer horasTrabajadas) {
+    public void setHorasTrabajadas(Integer horasTrabajadas) {
         this.horasTrabajadas = horasTrabajadas;
     }
 }

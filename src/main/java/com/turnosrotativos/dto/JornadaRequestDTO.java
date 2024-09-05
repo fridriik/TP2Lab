@@ -1,6 +1,5 @@
 package com.turnosrotativos.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.turnosrotativos.model.ConceptoLaboral;
 import com.turnosrotativos.model.Empleado;
 import com.turnosrotativos.model.JornadaLaboral;
@@ -18,29 +17,34 @@ public class JornadaRequestDTO {
     @NotNull(message = "fecha es obligatoria")
     private LocalDate fecha;
 
+    public JornadaLaboral toEntity(Empleado empleado, ConceptoLaboral conceptoLaboral) {
+        JornadaLaboral jornadaLaboral = new JornadaLaboral();
+        jornadaLaboral.setEmpleado(empleado);
+        jornadaLaboral.setConceptoLaboral(conceptoLaboral);
+        jornadaLaboral.setFecha(this.fecha);
+        jornadaLaboral.setHorasTrabajadas(this.horasTrabajadas);
+        return jornadaLaboral;
+    }
+
     private Integer horasTrabajadas;
 
-    public @NotNull(message = "idEmpleado es obligatorio") Integer getIdEmpleado() {
+    public Integer getIdEmpleado() {
         return idEmpleado;
     }
 
-    public void setIdEmpleado(@NotNull(message = "idEmpleado es obligatorio") Integer idEmpleado) {
-        this.idEmpleado = idEmpleado;
-    }
+    public void setIdEmpleado(Integer idEmpleado) {this.idEmpleado = idEmpleado;}
 
-    public @NotNull(message = "idConcepto es obligatorio") Integer getIdConcepto() {
+    public Integer getIdConcepto() {
         return idConcepto;
     }
 
-    public void setIdConcepto(@NotNull(message = "idConcepto es obligatorio") Integer idConcepto) {
-        this.idConcepto = idConcepto;
-    }
+    public void setIdConcepto(Integer idConcepto) {this.idConcepto = idConcepto;}
 
-    public @NotNull(message = "fecha es obligatoria") LocalDate getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(@NotNull(message = "fecha es obligatoria") LocalDate fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
@@ -50,14 +54,5 @@ public class JornadaRequestDTO {
 
     public void setHorasTrabajadas(Integer horasTrabajadas) {
         this.horasTrabajadas = horasTrabajadas;
-    }
-
-    public JornadaLaboral toEntity(Empleado empleado, ConceptoLaboral conceptoLaboral) {
-        JornadaLaboral jornadaLaboral = new JornadaLaboral();
-        jornadaLaboral.setEmpleado(empleado);
-        jornadaLaboral.setConceptoLaboral(conceptoLaboral);
-        jornadaLaboral.setFecha(this.fecha);
-        jornadaLaboral.sethorasTrabajadas(this.horasTrabajadas);
-        return jornadaLaboral;
     }
 }
