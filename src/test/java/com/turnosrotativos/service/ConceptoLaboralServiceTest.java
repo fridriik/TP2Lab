@@ -1,6 +1,7 @@
 package com.turnosrotativos.service;
 
 import com.turnosrotativos.dto.ConceptoLaboralDTO;
+import com.turnosrotativos.model.ConceptoLaboral;
 import com.turnosrotativos.repository.ConceptoLaboralRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,12 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class ConceptoLaboralServiceTest {
@@ -35,87 +36,71 @@ class ConceptoLaboralServiceTest {
     }
 
     @Test
-    void obtenerTodosLosConceptos() {
-        when(conceptoLaboralRepository.findAll()).thenReturn(
-                Arrays.asList(conceptoDTO1.toEntity(), conceptoDTO2.toEntity(), conceptoDTO3.toEntity()));
+    void testObtenerTodosLosConceptos() {
+        when(conceptoLaboralRepository.findAll())
+                .thenReturn(List.of(conceptoDTO1.toEntity(), conceptoDTO2.toEntity(), conceptoDTO3.toEntity()));
 
-        List<ConceptoLaboralDTO> resultado = conceptoLaboralService.obtenerTodosLosConceptos();
+        List<ConceptoLaboralDTO> result = conceptoLaboralService.obtenerTodosLosConceptos();
 
-        assertNotNull(resultado);
-        assertEquals(3, resultado.size());
-        assertEquals("Turno Normal", resultado.get(0).getNombre());
-        assertEquals(2, resultado.get(1).getHsMinimo());
-        assertEquals(false, resultado.get(2).getLaborable());
-
+        assertEquals(3, result.size());
+        assertEquals("Turno Normal", result.get(0).getNombre());
+        assertEquals("Turno Extra", result.get(1).getNombre());
+        assertEquals("Día Libre", result.get(2).getNombre());
         verify(conceptoLaboralRepository, times(1)).findAll();
     }
 
     @Test
-    void obtenerConceptoPorId() {
+    void testObtenerConceptoPorId() {
         when(conceptoLaboralRepository.findById(1)).thenReturn(Optional.of(conceptoDTO1.toEntity()));
 
-        List<ConceptoLaboralDTO> resultado = conceptoLaboralService.obtenerConceptoLaboralPorId(1);
-        assertNotNull(resultado);
-        assertEquals(1, resultado.size());
-        assertEquals(1, resultado.get(0).getId());
-
-        verify(conceptoLaboralRepository, times(1)).findById(1);
-    }
-
-    @Test
-    void obtenerConceptoLaboralPorIdNoEncontrado() {
-        when(conceptoLaboralRepository.findById(1)).thenReturn(Optional.empty());
-
-        List<ConceptoLaboralDTO> resultado = conceptoLaboralService.obtenerConceptoLaboralPorId(1);
-
-        assertTrue(resultado.isEmpty());
-        verify(conceptoLaboralRepository, times(1)).findById(1);
-    }
-
-    @Test
-    void obtenerConceptoPorNombre() {
-        when(conceptoLaboralRepository.findByNombreContaining("Turno Normal")).thenReturn(Arrays.asList(conceptoDTO1.toEntity(), conceptoDTO2.toEntity()));
-
-        List<ConceptoLaboralDTO> resultado = conceptoLaboralService.obtenerConceptoLaboralPorNombre("Turno Normal");
-
-        assertNotNull(resultado);
-        assertEquals(2, resultado.size());
-        assertEquals("Turno Normal", resultado.get(0).getNombre());
-
-        verify(conceptoLaboralRepository, times(1)).findByNombreContaining("Turno Normal");
-    }
-
-    @Test
-    void testObtenerConceptoLaboralPorNombreNoEncontrado() {
-        when(conceptoLaboralRepository.findByNombreContaining("Turno Inexistente")).thenReturn(Collections.emptyList());
-
-        List<ConceptoLaboralDTO> resultado = conceptoLaboralService.obtenerConceptoLaboralPorNombre("Turno Inexistente");
-
-        assertTrue(resultado.isEmpty());
-
-        verify(conceptoLaboralRepository, times(1)).findByNombreContaining("Turno Inexistente");
-    }
-
-
-    @Test
-    void testObtenerConceptoLaboralPorIdYNombre() {
-        when(conceptoLaboralRepository.findByIdAndNombreContaining(1, "Turno Normal")).thenReturn(List.of(conceptoDTO1.toEntity()));
-
-        List<ConceptoLaboralDTO> result = conceptoLaboralService.obtenerConceptoLaboralPorIdYNombre(1, "Turno Normal");
+        List<ConceptoLaboralDTO> result = conceptoLaboralService.obtenerConceptoLaboralPorId(1);
 
         assertEquals(1, result.size());
         assertEquals("Turno Normal", result.get(0).getNombre());
-
-        verify(conceptoLaboralRepository, times(1)).findByIdAndNombreContaining(1, "Turno Normal");
+        verify(conceptoLaboralRepository, times(1)).findById(1);
     }
 
     @Test
-    void testObtenerConceptosLaboralesSinParametros() {
-        when(conceptoLaboralRepository.findAll()).thenReturn(
-                Arrays.asList(conceptoDTO1.toEntity(), conceptoDTO2.toEntity(), conceptoDTO3.toEntity()));
-        List<ConceptoLaboralDTO> resultado = conceptoLaboralService.obtenerConceptosLaborales(null, null);
-        assertNotNull(resultado);
-        assertEquals(3, resultado.size());
-        verify(conceptoLaboralRepository, times(1)).findAll();
+    void testObtenerConceptoPorIdNotFound() {
+        when(conceptoLaboralRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        List<ConceptoLaboralDTO> result = conceptoLaboralService.obtenerConceptoLaboralPorId(4);
+
+        assertTrue(result.isEmpty());
+        verify(conceptoLaboralRepository, times(1)).findById(4);
+    }
+
+    @Test
+    void testObtenerConceptoPorNombre() {
+        when(conceptoLaboralRepository.findByNombreContaining("Turno"))
+                .thenReturn(List.of(conceptoDTO1.toEntity(), conceptoDTO2.toEntity()));
+
+        List<ConceptoLaboralDTO> result = conceptoLaboralService.obtenerConceptoLaboralPorNombre("Turno");
+
+        assertEquals(2, result.size());
+        assertEquals("Turno Normal", result.get(0).getNombre());
+        assertEquals("Turno Extra", result.get(1).getNombre());
+        verify(conceptoLaboralRepository, times(1)).findByNombreContaining("Turno");
+    }
+
+    @Test
+    void testObtenerConceptoPorIdYNombre() {
+        when(conceptoLaboralRepository.findById(1)).thenReturn(Optional.of(conceptoDTO1.toEntity()));
+
+        List<ConceptoLaboralDTO> result = conceptoLaboralService.obtenerConceptoLaboralPorIdYNombre(1, "Normal");
+
+        assertEquals(1, result.size());
+        assertEquals("Turno Normal", result.get(0).getNombre());
+        verify(conceptoLaboralRepository, times(1)).findById(1);
+    }
+
+    @Test
+    void testObtenerConceptoPorIdYNombreNoMatch() {
+        when(conceptoLaboralRepository.findById(1)).thenReturn(Optional.of(conceptoDTO1.toEntity()));
+
+        List<ConceptoLaboralDTO> result = conceptoLaboralService.obtenerConceptoLaboralPorIdYNombre(1, "Extra");
+
+        assertTrue(result.isEmpty());
+        verify(conceptoLaboralRepository, times(1)).findById(1);
     }
 }
