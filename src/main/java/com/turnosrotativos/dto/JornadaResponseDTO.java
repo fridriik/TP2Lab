@@ -16,6 +16,19 @@ public class JornadaResponseDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer horasTrabajadas;
 
+    public static JornadaResponseDTO fromEntity(JornadaLaboral jornadaLaboral) {
+        JornadaResponseDTO dto = new JornadaResponseDTO();
+        dto.setId(jornadaLaboral.getId());
+        dto.setNroDocumento(jornadaLaboral.getEmpleado().getNroDocumento());
+        dto.setNombreCompleto(jornadaLaboral.getEmpleado().getNombre() + " " + jornadaLaboral.getEmpleado().getApellido());
+        dto.setFecha(jornadaLaboral.getFecha());
+        dto.setConcepto(jornadaLaboral.getConceptoLaboral().getNombre());
+        if (!"Día Libre".equals(jornadaLaboral.getConceptoLaboral().getNombre())) {
+            dto.setHorasTrabajadas(jornadaLaboral.getHorasTrabajadas());
+        }
+        return dto;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -62,18 +75,5 @@ public class JornadaResponseDTO {
 
     public void setHorasTrabajadas(Integer horasTrabajadas) {
         this.horasTrabajadas = horasTrabajadas;
-    }
-
-    public static JornadaResponseDTO fromEntity(JornadaLaboral jornadaLaboral) {
-        JornadaResponseDTO dto = new JornadaResponseDTO();
-        dto.setId(jornadaLaboral.getId());
-        dto.setNroDocumento(jornadaLaboral.getEmpleado().getNroDocumento());
-        dto.setNombreCompleto(jornadaLaboral.getEmpleado().getNombre() + " " + jornadaLaboral.getEmpleado().getApellido());
-        dto.setFecha(jornadaLaboral.getFecha());
-        dto.setConcepto(jornadaLaboral.getConceptoLaboral().getNombre());
-        if (!"Día Libre".equals(jornadaLaboral.getConceptoLaboral().getNombre())) {
-            dto.setHorasTrabajadas(jornadaLaboral.getHorasTrabajadas());
-        }
-        return dto;
     }
 }
