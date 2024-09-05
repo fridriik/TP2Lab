@@ -9,5 +9,4 @@ class TurnosRotativosApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
