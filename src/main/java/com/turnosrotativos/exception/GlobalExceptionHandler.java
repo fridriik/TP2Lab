@@ -1,5 +1,10 @@
 package com.turnosrotativos.exception;
 
+import com.turnosrotativos.service.EmpleadoService;
+import org.hibernate.exception.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,6 +18,8 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -54,6 +61,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDateFormatException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidDateFormatException(InvalidDateFormatException e) {
         return buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    //Al tener las columnas nro_documento y email con unique violaban integridad de datos
+    //se catchean y se controlan desde aca
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof ConstraintViolationException constraintViolation) {
+            String constraintName = constraintViolation.getConstraintName();
+            if (constraintName != null) {
+                // CONSTRAINT_INDEX_42 --> EMAIL
+                if (constraintName.contains("CONSTRAINT_INDEX_42")) {
+                    logger.error("Violación de restricción de unicidad para email");
+                    return buildResponse("Ya existe un empleado con el email ingresado.", HttpStatus.CONFLICT);
+                }
+                // CONSTRAINT_INDEX_4 --> NRO_DOCUMENTO
+                else if (constraintName.contains("CONSTRAINT_INDEX_4")) {
+                    logger.error("Violación de restricción de unicidad para documento");
+                    return buildResponse("Ya existe un empleado con el documento ingresado.", HttpStatus.CONFLICT);
+                }
+            }
+        }
+        // Si no hay coincidencias específicas, manejar como un conflicto genérico
+        return buildResponse("Conflicto de datos de integridad.", HttpStatus.CONFLICT);
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(String message, HttpStatus status) {

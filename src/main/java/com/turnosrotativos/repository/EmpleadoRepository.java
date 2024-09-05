@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmpleadoRepository extends JpaRepository<Empleado, Long> {
-    boolean existsByNroDocumento(int nroDocumento);
-    boolean existsByEmail(String email);
     List<Empleado> findAll();
+    boolean existsByNroDocumento(Integer nroDocumento);
+    boolean existsByNroDocumentoAndIdNot(Integer nroDocumento, Integer empleadoId);
+    boolean existsByEmail(String email);
+    boolean existsByEmailAndIdNot(String email, Integer empleadoId);
 }
+

@@ -1,9 +1,11 @@
 package com.turnosrotativos.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.turnosrotativos.model.Empleado;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 
 public class EmpleadoDTO {
 
@@ -48,6 +50,32 @@ public class EmpleadoDTO {
 
     public EmpleadoDTO(){}
 
+    public Empleado toEntity() {
+        Empleado empleado = new Empleado();
+        empleado.setId(this.id);
+        empleado.setNroDocumento(this.nroDocumento);
+        empleado.setNombre(this.nombre);
+        empleado.setApellido(this.apellido);
+        empleado.setEmail(this.email);
+        empleado.setFechaNacimiento(this.fechaNacimiento);
+        empleado.setFechaIngreso(this.fechaIngreso);
+        return empleado;
+    }
+
+    public static EmpleadoDTO fromEntity(Empleado empleado) {
+        EmpleadoDTO dto = new EmpleadoDTO(
+                empleado.getId(),
+                empleado.getNombre(),
+                empleado.getApellido(),
+                empleado.getEmail(),
+                empleado.getNroDocumento(),
+                empleado.getFechaNacimiento(),
+                empleado.getFechaIngreso()
+        );
+        dto.setFechaCreacion(empleado.getFechaCreacion());
+        return dto;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -88,29 +116,11 @@ public class EmpleadoDTO {
         this.fechaCreacion = fechaCreacion;
     }
 
-    public Empleado toEntity() {
-        Empleado empleado = new Empleado();
-        empleado.setId(this.id);
-        empleado.setNroDocumento(this.nroDocumento);
-        empleado.setNombre(this.nombre);
-        empleado.setApellido(this.apellido);
-        empleado.setEmail(this.email);
-        empleado.setFechaNacimiento(this.fechaNacimiento);
-        empleado.setFechaIngreso(this.fechaIngreso);
-        return empleado;
-    }
+    @JsonIgnore
+    @AssertTrue(message = "La fecha de ingreso no puede ser posterior al día de la fecha.")
+    public boolean isFechaIngresoValida() {return !fechaIngreso.isAfter(LocalDate.now());}
 
-    public static EmpleadoDTO fromEntity(Empleado empleado) {
-        EmpleadoDTO dto = new EmpleadoDTO(
-                empleado.getId(),
-                empleado.getNombre(),
-                empleado.getApellido(),
-                empleado.getEmail(),
-                empleado.getNroDocumento(),
-                empleado.getFechaNacimiento(),
-                empleado.getFechaIngreso()
-        );
-        dto.setFechaCreacion(empleado.getFechaCreacion());
-        return dto;
-    }
+    @JsonIgnore
+    @AssertTrue(message = "La edad del empleado no puede ser menor a 18 años.")
+    public boolean isMayorDeEdad() {return Period.between(this.fechaNacimiento, LocalDate.now()).getYears() >= 18;}
 }
