@@ -43,7 +43,7 @@ public class EmpleadoController {
     }
 
     @PutMapping("/{empleadoId}")
-    public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable("empleadoId") Integer empleadoId, @RequestBody EmpleadoDTO empleadoDTO) {
+    public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable("empleadoId") Integer empleadoId, @Valid @RequestBody EmpleadoDTO empleadoDTO) {
         logger.info("Solicitud recibida para actualizar al empleado con el Id: {}", empleadoId);
         EmpleadoDTO empleadoActualizado = empleadoService.actualizarEmpleado(empleadoId, empleadoDTO);
         logger.info("Solicitud finalizada con éxito, empleado actualizado con Id: {}", empleadoId);
