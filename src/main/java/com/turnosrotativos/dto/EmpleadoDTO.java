@@ -48,7 +48,8 @@ public class EmpleadoDTO {
         this.fechaIngreso = fechaIngreso;
     }
 
-    public EmpleadoDTO(){}
+    public EmpleadoDTO() {
+    }
 
     public Empleado toEntity() {
         Empleado empleado = new Empleado();
@@ -84,43 +85,80 @@ public class EmpleadoDTO {
         this.id = id;
     }
 
-    public String getNombre() {return nombre;}
+    public String getNombre() {
+        return nombre;
+    }
 
-    public void setNombre(String nombre) {this.nombre = nombre;}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public String getApellido() {return apellido;}
+    public String getApellido() {
+        return apellido;
+    }
 
-    public void setApellido(String apellido) {this.apellido = apellido;}
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
 
-    public String getEmail() {return email;}
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(String email) {this.email = email;}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public Integer getNroDocumento() {return nroDocumento;}
+    public Integer getNroDocumento() {
+        return nroDocumento;
+    }
 
-    public void setNroDocumento(Integer nroDocumento) {this.nroDocumento = nroDocumento;}
+    public void setNroDocumento(Integer nroDocumento) {
+        this.nroDocumento = nroDocumento;
+    }
 
-    public LocalDate getFechaNacimiento() {return fechaNacimiento;}
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {this.fechaNacimiento = fechaNacimiento;}
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
 
     public LocalDate getFechaIngreso() {
         return fechaIngreso;
     }
 
-    public void setFechaIngreso(LocalDate fechaIngreso) {this.fechaIngreso = fechaIngreso;}
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
+    }
 
-    public LocalDateTime getFechaCreacion() {return fechaCreacion;}
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
+    //Validaciones básicas con anotaciones personalizadas
     @JsonIgnore
     @AssertTrue(message = "La fecha de ingreso no puede ser posterior al día de la fecha.")
-    public boolean isFechaIngresoValida() {return !fechaIngreso.isAfter(LocalDate.now());}
+    public boolean isFechaIngresoValida() {
+        if (this.fechaIngreso == null) {return true;}
+        return !fechaIngreso.isAfter(LocalDate.now());
+    }
+
+    @JsonIgnore
+    @AssertTrue(message = "La fecha de nacimiento no puede ser posterior al día de la fecha.")
+    public boolean isFechaNacimientoValida() {
+        return this.fechaNacimiento == null || !this.fechaNacimiento.isAfter(LocalDate.now());
+    }
 
     @JsonIgnore
     @AssertTrue(message = "La edad del empleado no puede ser menor a 18 años.")
-    public boolean isMayorDeEdad() {return Period.between(this.fechaNacimiento, LocalDate.now()).getYears() >= 18;}
+    public boolean isMayorDeEdad() {
+        if (!isFechaNacimientoValida() || this.fechaNacimiento == null) {return true;}
+        return Period.between(this.fechaNacimiento, LocalDate.now()).getYears() >= 18;
+    }
 }
