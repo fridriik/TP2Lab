@@ -95,6 +95,7 @@ public class Empleado {
         return fechaCreacion;
     }
 
+    // Se establece la fecha de creación antes de persistir el empleado
     @PrePersist
     protected void onCreate() {
         if (fechaCreacion == null) {

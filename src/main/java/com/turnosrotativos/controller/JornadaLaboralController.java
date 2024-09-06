@@ -3,6 +3,7 @@ package com.turnosrotativos.controller;
 import com.turnosrotativos.dto.JornadaRequestDTO;
 import com.turnosrotativos.dto.JornadaResponseDTO;
 import com.turnosrotativos.service.JornadaLaboralService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class JornadaLaboralController {
     private JornadaLaboralService jornadaLaboralService;
 
     @PostMapping
-    public ResponseEntity<JornadaResponseDTO> crearJornada(@RequestBody JornadaRequestDTO requestDTO) {
+    public ResponseEntity<JornadaResponseDTO> crearJornada(@Valid @RequestBody JornadaRequestDTO requestDTO) {
         logger.info("Solicitud recibida para crear jornada laboral");
         JornadaResponseDTO responseDTO = jornadaLaboralService.crearJornada(requestDTO);
         logger.info("Solicitud finalizada con éxito, jornada laboral creada con Id: {}", responseDTO.getId());

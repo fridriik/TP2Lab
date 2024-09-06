@@ -65,6 +65,7 @@ public class EmpleadoService {
                     logger.warn("Intento de actualizar empleado inexistente con Id: {}", empleadoId);
                     return new NotFoundException("No se encontró el empleado con Id: " + empleadoId);
                 });
+        //Actualizamos al empleado seleccionado
         empleadoExistente.setNombre(empleadoDTO.getNombre());
         empleadoExistente.setApellido(empleadoDTO.getApellido());
         empleadoExistente.setEmail(empleadoDTO.getEmail());
@@ -84,6 +85,7 @@ public class EmpleadoService {
                     logger.warn("Intento de eliminar empleado inexistente. Id: {}", empleadoId);
                     return new NotFoundException("No se encontró el empleado con Id: " + empleadoId);
                 });
+        // Verifica si el empleado tiene jornadas laborales asociadas antes de eliminar
         if (jornadaLaboralRepository.countByEmpleadoId(empleadoId) > 0) {
             logger.warn("Intento de eliminar empleado con jornadas asociadas. Id: {}", empleadoId);
             throw new BadRequestException("No es posible eliminar un empleado con jornadas asociadas.");
